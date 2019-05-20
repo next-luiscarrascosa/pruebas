@@ -8,9 +8,10 @@ class Carta:
     Carta tiene un número, un palo
     """
 
-    def __init__(self, numero, palo):
+    def __init__(self, numero, palo, visible):
         self.numero = numero
         self.palo = palo
+        self.visible = visible
 
     def __str__(self):
         return f"{self.numero} de {self.palo}"
@@ -33,14 +34,14 @@ class Baraja:
         self.palos = ["Espadas", "Bastos", "Copas", "Oros"]
     
         for palo in self.palos:
-            self.__baraja.append(Carta("As", palo))
+            self.__baraja.append(Carta("As", palo, False))
 
             for x in range(2, 11):
-               self.__baraja.append(Carta(x, palo))
+               self.__baraja.append(Carta(x, palo, False))
 
-            self.__baraja.append(Carta("Sota", palo))
-            self.__baraja.append(Carta("Caballo", palo))
-            self.__baraja.append(Carta("Rey", palo))
+            self.__baraja.append(Carta("Sota", palo, False))
+            self.__baraja.append(Carta("Caballo", palo, False))
+            self.__baraja.append(Carta("Rey", palo, False))
 
         print(f"Creadas las {len(self.__baraja)} cartas de la baraja")
 

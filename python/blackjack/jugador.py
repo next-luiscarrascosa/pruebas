@@ -10,37 +10,32 @@ class Jugador:
     """
     __cartas = []
     __is_crupier = False
-    __suma = 0
     __apuesta=0.0
+    __valores1 = {"2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9, "10": 10, "Sota": 10, "Caballo": 10, "Rey": 10, "As": 1}
+    __valores11 = {"2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9, "10": 10, "Sota": 10, "Caballo": 10, "Rey": 10, "As": 11}
 
-    def __init__(self, crupier, saldo):
+    def __init__(self, crupier, saldo, nombre):
         self.__is_crupier = crupier
         self.saldo = saldo
+        self.nombre = nombre
 
     def isCrupier(self):
         return self.__is_crupier
 
+    def viewNotVisibleCard(self):
+        return [carta for carta in self.__cartas if carta.isVisible() == False]
+
     def addCard(self, baraja, visible):
         new_carta = baraja.getCard()
+        new_carta.setVisible(visible)
         self.__cartas.append(new_carta)
 
-        if(visible == True):
-            if new_carta.numero in ("Sota", "Caballo", "Rey"):
-                self.__suma += 10
-            elif new_carta.numero != "As":
-                valor = int(new_carta.numero)
-                if valor > 1 and valor <11:
-                    self.__suma += valor
-                else:
-                    raise error.ValorCartaErroneo("Excepción en 'if valor > 1 and valor <11:'", "Valor no permitido")
-            elif new_carta.numero == "As":
-                if self.__suma+11 > 21:
-                    self.__suma += 1
-                else:
-                    self.__suma += 11
-
     def value(self):
-        return self.__suma
+        suma = sum([self.__valores11[carta.numero] for carta in self.__cartas if carta.isVisible() == True])
+        if(suma>21):
+            suma = sum([self.__valores1[carta.numero] for carta in self.__cartas if carta.isVisible() == True])        
+
+        return suma
 
     def apuesta(self, apuesta):
         if(self.saldo<apuesta):
@@ -49,6 +44,9 @@ class Jugador:
         else:
             self.__apuesta = apuesta
             return True
+
+    def empate(self):
+        self.__apuesta = 0.0
 
     def liquidar_apuesta(self, resultado):
         '''

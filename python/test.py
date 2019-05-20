@@ -13,4 +13,14 @@ def func():
     print(second)
 
 
-func()
+# func()
+
+
+def func1(param):
+    data = ["A", "B"]
+
+    index = data.index(param)
+    print(data[index-1])
+
+func1("B")
+func1("A")

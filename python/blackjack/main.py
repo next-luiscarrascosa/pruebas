@@ -16,10 +16,35 @@ Hay una cuenta con dinero para apuestas
 
 import baraja, jugador
 
+def printState(jugador, index):
+    print (f"{jugador.nombre} tiene {jugador.saldo}")
+    print (f"{jugadores[index - 1].nombre} tiene {jugadores[index - 1].saldo}")
+
+def reviseGame(jugador, tipoVictoria, tipoDerrota):
+    if jugador.value()==21:
+        index = jugadores.index(jugador)
+        jugador.liquidar_apuesta(tipoVictoria)   
+        jugadores[index - 1].liquidar_apuesta(tipoDerrota)
+
+        print (f"¡Ha ganado {jugador.nombre}!")
+        printState(jugador, index)
+
+        return True
+    elif jugador.value() > 21: 
+        print (f"¡Se ha pasado {jugador.nombre}!")
+        printState(jugador, index)
+
+        return False
+
+def checkSaldo():
+    if jugadores[0].saldo == 0 or jugadores[1].saldo == 0:
+        return False
+    else:
+        return True
+
 # Creación de jugadores
 saldo_inicial = 2000.0
-jugador_humano = jugador.Jugador(False, saldo_inicial)
-crupier = jugador.Jugador(True, saldo_inicial)
+jugadores = [jugador.Jugador(False, saldo_inicial, "JUGADOR"), jugador.Jugador(True, saldo_inicial, "CRUPIER")]
 
 # Creación de baraja
 new_baraja=baraja.Baraja()
@@ -31,28 +56,56 @@ while(True):
     except ValueError:
         print(f"\nApuesta {apuesta} errónea, inténtelo otra vez")
     else:
-        retorno1 = jugador_humano.apuesta(apuesta)
-        retorno2 = crupier.apuesta(apuesta)
+        retorno1 = jugadores[0].apuesta(apuesta)
+        retorno2 = jugadores[1].apuesta(apuesta)
 
-        if(retorno1==True or retorno2==True):
+        if(retorno1==True and retorno2==True):
             print(f"\nAceptada la apuesta de {apuesta}")
             break
         else:
             print(f"\nNo cuenta con el saldo necesario para cubir la apuesta de {apuesta}. Inténtelo otra vez")
 
-# Barajar
-new_baraja.barajar()
-print(new_baraja.__str__())
-# Reparto de cartas
+while(checkSaldo() == True):
+    decision=str(input("¿Desea jugar a una partida de Blackjack (S)?: "))
 
-# ¿Blackjack del crupier?
+    if decision != "S":
+        break
+    
+    # Barajar
+    new_baraja.barajar()
 
-# ¿Blackjack del jugador?
+    # Reparto de cartas
+    jugadores[0].addCard(new_baraja, True)
+    jugadores[0].addCard(new_baraja, True)
 
-# Turno del jugador
+    jugadores[1].addCard(new_baraja, True)
+    jugadores[1].addCard(new_baraja, False)
 
-# Turno del crupier
+    # ¿Blackjack del jugador?
+    if(reviseGame(jugadores[0], "S_BLACKJACK", "N_BLACKJACK")):
+        continue    
 
-# Resolución de la apuesta
+        
+    # ¿Posible Blackjack del crupier?
+    if jugadores[1].value() == 11:
+        if jugadores[1].viewNotVisibleCard() == 10:
+            jugadores[0].liquidar_apuesta("N_BLACKJACK")   
+            jugadores[1].liquidar_apuesta("S_BLACKJACK") 
+            continue
+            
+    while(True):
+        decision=str(input("¿Coge otra carta (S) o se planta?: "))
 
-# ¿Volver a jugar?
+        if decision == "S":
+            jugadores[0].addCard(new_baraja, True)
+            reviseGame(jugadores[0], "S", "N")
+            continue
+        else:
+            break
+
+
+    # Turno del crupier
+
+    # Resolución de la apuesta
+
+    # ¿Volver a jugar?
